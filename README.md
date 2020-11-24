@@ -1,1 +1,1 @@
-# cool-inference
+# Cool Inference
