@@ -46,4 +46,4 @@ def test4():
         print("\t", error)
     print("]")
 
-    assert False
+    assert errors == ['Method "init" is not defined in Main.']
