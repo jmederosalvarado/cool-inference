@@ -66,13 +66,30 @@ class TypeCollector(object):
     @visitor.when(Program)
     def visit(self, node):  # noqa: F811
         self.context = Context()
-        # TODO: inherit form object in special types
-        self.context.types["Object"] = ObjectType()
-        self.context.types["Int"] = IntType()
-        self.context.types["Void"] = VoidType()
-        self.context.types["Bool"] = BoolType()
-        self.context.types["String"] = StringType()
-        self.context.types["AUTO_TYPE"] = AutoType()
+
+        object_type = ObjectType()
+        self.context.types["Object"] = object_type
+
+        int_type = IntType()
+        int_type.set_parent(object_type)
+        self.context.types["Int"] = int_type
+
+        void_type = VoidType()
+        void_type.set_parent(object_type)
+        self.context.types["Void"] = void_type
+
+        bool_type = BoolType()
+        bool_type.set_parent(object_type)
+        self.context.types["Bool"] = bool_type
+
+        string_type = StringType()
+        string_type.set_parent(object_type)
+        self.context.types["String"] = string_type
+
+        auto_type = AutoType()
+        auto_type.set_parent(object_type)
+        self.context.types["AUTO_TYPE"] = auto_type
+
         for cl in node.cool_class_list:
             self.visit(cl)
 
