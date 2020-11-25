@@ -1,4 +1,6 @@
-from lark import Lark, Transformer
+from lark import Lark
+
+# flake8: noqa
 
 parser = Lark(
     """
@@ -21,7 +23,7 @@ parser = Lark(
                  | arithmetic LE arithmetic -> comparison_le
                  | arithmetic EQ arithmetic -> comparison_eq
                  | arithmetic
- 
+
      ?arithmetic : arithmetic PLUS term -> arithmetic_add
                  | arithmetic MINUS term -> arithmetic_sub
                  | term
@@ -57,7 +59,7 @@ parser = Lark(
                  | ESCAPED_STRING -> string_atom
                  | TRUE -> bool_atom
                  | FALSE -> bool_atom
- 
+
 // Terminals
 
 TYPE : UCASE_LETTER [CNAME]
@@ -116,4 +118,3 @@ ESAC : "esac"
     parser="lalr",
     transformer=None,
 )
-
