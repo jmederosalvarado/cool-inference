@@ -117,5 +117,5 @@ ESAC : "esac"
 %ignore WS
 """,
     parser="lalr",
-    transformer=CoolASTTransformer,
+    transformer=CoolASTTransformer(),
 )
