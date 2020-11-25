@@ -1,5 +1,5 @@
 from lark import Transformer
-from src.cool_ast import (
+from cool_inference.ast import (
     Program,
     CoolClass,
     FuncDecl,
@@ -31,7 +31,7 @@ from src.cool_ast import (
 )
 
 
-class GetTree(Transformer):
+class CoolASTTransformer(Transformer):
     def start(self, children):
         class_list = []
         for item in children:

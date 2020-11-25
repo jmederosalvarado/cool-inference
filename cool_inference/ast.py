@@ -138,8 +138,9 @@ class Assign(Expression):
         return str("Assign")
 
 
-# Unary expressions
-############################################
+#####################
+# Unary expressions #
+#####################
 
 
 class Unary(Expression):
@@ -167,8 +168,9 @@ class ParenthExp(Unary):
         return str("(" + str(self.exp) + ")")
 
 
-# Binary expressions
-##########################################
+######################
+# Binary expressions #
+######################
 
 
 class Binary(Expression):
@@ -225,8 +227,9 @@ class WhileLoop(Binary):
         return str("While")
 
 
-# Ternary expressions
-##########################################
+#######################
+# Ternary expressions #
+#######################
 
 
 class Ternary(Expression):
@@ -241,8 +244,9 @@ class IfThenElse(Ternary):
         return str("IfThenElse")
 
 
-# Atoms
-#########################################
+#########
+# Atoms #
+#########
 
 
 class Atom(Expression):
@@ -271,4 +275,3 @@ class IdExp(Expression):
 
     def __str__(self):
         return str("Id")
-

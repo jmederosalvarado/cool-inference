@@ -1,4 +1,5 @@
 from lark import Lark
+from cool_inference.parsing.transformer import CoolASTTransformer
 
 # flake8: noqa
 
@@ -116,5 +117,5 @@ ESAC : "esac"
 %ignore WS
 """,
     parser="lalr",
-    transformer=None,
+    transformer=CoolASTTransformer,
 )
