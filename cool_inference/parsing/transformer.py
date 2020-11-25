@@ -131,11 +131,16 @@ class CoolASTTransformer(Transformer):
         return IsVoid(children[1])
 
     def dispatch(self, children):
-        exp = children[0]
-        idx = children[2]
+        if children[1].value == ".":
+            exp = children[0]
+            idx = children[2]
+            n = 4
+        elif children[1].value == "(":
+            exp = IdExp("self")
+            idx = children[0]
+            n = 2
 
         args = []
-        n = 4
         while n < len(children):
             try:
                 if children[n].value == ")":
