@@ -66,6 +66,7 @@ class TypeCollector(object):
     @visitor.when(Program)
     def visit(self, node):  # noqa: F811
         self.context = Context()
+        # TODO: inherit form object in special types
         self.context.types["Object"] = ObjectType()
         self.context.types["Int"] = IntType()
         self.context.types["Void"] = VoidType()
@@ -101,6 +102,9 @@ class TypeBuilder:
     @visitor.when(CoolClass)
     def visit(self, node):  # noqa: F811
         self.current_type = self.context.get_type(node.id)
+
+        parent_type = self.context.get_type("Object")
+
         if node.inherit is not None:
             try:
                 _type = self.context.get_type(node.inherit)
@@ -109,10 +113,11 @@ class TypeBuilder:
                 self.errors.append(error.text)
             parent_type = _type
 
-            try:
-                self.current_type.set_parent(parent_type)
-            except SemanticError as e:
-                self.errors.append(e.text)
+        try:
+            self.current_type.set_parent(parent_type)
+        except SemanticError as e:
+            self.errors.append(e.text)
+
         for feat in node.feature_list:
             self.visit(feat)
 
