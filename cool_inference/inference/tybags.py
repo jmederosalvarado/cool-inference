@@ -37,7 +37,7 @@ class TyBags:
         try:
             var_name = node.id
         except AttributeError:
-            return False
+            return
 
         var_types = self.find_variable(var_name)
 
@@ -54,10 +54,6 @@ class TyBags:
                 self.modify_variable(var_name, types)
             else:
                 self.modify_variable(var_name, intersection)
-
-        new_var_types = self.find_variable(var_name)
-
-        return var_types != new_var_types
 
     def define_variable(self, name, types):
         self.vars[name] = set(types)
@@ -76,3 +72,40 @@ class TyBags:
                 self.parent.modify_variable(name, types)
             else:
                 raise e
+
+    # este nombre esta al berro
+    def clean(self):
+        for _, value in self.vars.items():
+            if "@error" in value:
+                value.remove("@error")
+        for _, chil in self.children.items():
+            chil.clean()
+
+    # TODO: creo que esto esta maja
+    def compare(self, ty_bags):
+        if len(self.vars) != len(ty_bags.vars) or len(self.children) != len(
+            ty_bags.children
+        ):
+            return False
+
+        for (key1, value1), (key2, value2) in zip(
+            self.vars.items(), ty_bags.vars.items()
+        ):
+            if key1 != key2 or value1 != value2:
+                return False
+        for (key1, value1), (key2, value2) in zip(
+            self.children.items(), ty_bags.children.items()
+        ):
+            if key1 != key2 or not value1.compare(value2):
+                return False
+        return True
+
+    # TODO: este metodo deberia devolver un nuevo tybag igual a self
+    def clone(self, ty_bags):
+        self.parent = ty_bags.parent
+        for key, value in ty_bags.vars.items():
+            self.vars[key] = value.copy()
+        for key, value in ty_bags.children.items():
+            new_ty = TyBags()
+            new_ty.clone(value)
+            self.children[key] = new_ty

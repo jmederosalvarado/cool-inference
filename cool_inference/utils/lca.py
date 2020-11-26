@@ -1,3 +1,4 @@
+# TODO: esto esta maja
 def lowest_common_ancestor(type_1, type_2, context):
     object_type = context.get_type("Object")
     if type_1 == object_type or type_2 == object_type:
