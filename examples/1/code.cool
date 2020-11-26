@@ -1,0 +1,9 @@
+class Main inherits Object {
+    a : Int <- asd ;
+    b : String <- 1000;
+    c : Bool <- true;
+
+    met ( d : Int ) : Bool {
+        c <- false
+    } ;
+} ;
