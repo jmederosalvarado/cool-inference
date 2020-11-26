@@ -3,7 +3,6 @@ class TyBags:
         self.vars = {}
         self.parent = parent
         self.children = {}
-        self.index = 0 if parent is None else len(parent)
 
     def __len__(self):
         return len(self.vars)
@@ -49,21 +48,21 @@ class TyBags:
 
         if len(inters) == 0:
             if "@error" not in var_types and "@error" not in types:
-                self.modify_variable(var_name, set.union(var_types, types) + ["@error"])
+                self.modify_variable(
+                    var_name, set.union(set.union(var_types, types), set(["@error"]))
+                )
+
             else:
                 self.modify_variable(var_name, set.union(var_types, types))
 
         else:
             if "@error" in var_types:
                 self.modify_variable(var_name, set.union(var_types, types))
+                print((var_name, self.find_variable(var_name)))
             elif "@error" in types:
                 self.modify_variable(var_name, types)
             else:
                 self.modify_variable(var_name, inters)
-
-        new_var_types = self.find_variable(var_name)
-
-        return not sorted(var_types) == sorted(new_var_types)
 
     def define_variable(self, name, types):
         self.vars[name] = set(types)
@@ -86,3 +85,38 @@ class TyBags:
                 self.parent.modify_variable(name, types)
             else:
                 None
+
+    def clean(self):
+        for _, value in self.vars.items():
+            if "@error" in value:
+                value.remove("@error")
+        for _, chil in self.children.items():
+            chil.clean()
+
+    def compare(self, ty_bags):
+
+        if len(self.vars) != len(ty_bags.vars) or len(self.children) != len(
+            ty_bags.children
+        ):
+            return False
+
+        for (key1, value1), (key2, value2) in zip(
+            self.vars.items(), ty_bags.vars.items()
+        ):
+            if key1 != key2 or value1 != value2:
+                return False
+        for (key1, value1), (key2, value2) in zip(
+            self.children.items(), ty_bags.children.items()
+        ):
+            if key1 != key2 or not value1.compare(value2):
+                return False
+        return True
+
+    def clone(self, ty_bags):
+        self.parent = ty_bags.parent
+        for key, value in ty_bags.vars.items():
+            self.vars[key] = value.copy()
+        for key, value in ty_bags.children.items():
+            new_ty = TyBags()
+            new_ty.clone(value)
+            self.children[key] = new_ty
