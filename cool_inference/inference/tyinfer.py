@@ -85,6 +85,10 @@ class BagsCollector:
 
         return tybags
 
+    @visitor.when(AttrDecl)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
+
     @visitor.when(FuncDecl)
     def visit(self, node, tybags):  # noqa: F811
         self.current_method = self.current_type.get_method(node.id)
@@ -102,6 +106,18 @@ class BagsCollector:
         self.visit(node.body, method_tybags)
 
         self.current_method = None
+
+    @visitor.when(Assign)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
+
+    @visitor.when(Dispatch)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
+
+    @visitor.when(StaticDispatch)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
 
     @visitor.when(LetIn)
     def visit(self, node, tybags):  # noqa: F811
@@ -199,6 +215,26 @@ class BagsCollector:
         self.visit(node.first, tybags)
         self.visit(node.second, tybags)
         self.visit(node.third, tybags)
+
+    @visitor.when(StringExp)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
+
+    @visitor.when(BoolExp)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
+
+    @visitor.when(IntExp)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
+
+    @visitor.when(IdExp)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
+
+    @visitor.when(NewType)
+    def visit(self, node, tybags):  # noqa: F811
+        pass
 
 
 class BagsReducer:
