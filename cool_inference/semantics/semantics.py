@@ -26,6 +26,7 @@ class Method:
         self.param_names = param_names
         self.param_types = params_types
         self.return_type = return_type
+        self.tybags = None
 
     def __str__(self):
         params = ", ".join(
@@ -201,6 +202,26 @@ class StringType(Type):
 
     def __eq__(self, other):
         return other.name == self.name or isinstance(other, StringType)
+
+
+class IOType(Type):
+    def __init__(self):
+        Type.__init__(self, "IO")
+        self.define_method("out_string", ["x"], [StringType()], SelfType())
+        self.define_method("out_int", ["x"], [IntType()], SelfType())
+        self.define_method("in_string", [], [], StringType())
+        self.define_method("in_int", [], [], IntType())
+
+    def __eq__(self, other):
+        return other.name == self.name or isinstance(other, IOType)
+
+
+class SelfType(Type):
+    def __init__(self):
+        Type.__init__(self, "SELF_TYPE")
+
+    def __eq__(self, other):
+        return other.name == self.name or isinstance(other, SelfType)
 
 
 class AutoType(Type):

@@ -11,6 +11,8 @@ from cool_inference.semantics.semantics import (
     StringType,
     AutoType,
     ObjectType,
+    SelfType,
+    IOType,
 )
 from cool_inference.ast import (
     Program,
@@ -86,9 +88,21 @@ class TypeCollector(object):
         string_type.set_parent(object_type)
         self.context.types["String"] = string_type
 
+        error_type = ErrorType()
+        error_type.set_parent(object_type)
+        self.context.types["ERROR"] = error_type
+
         auto_type = AutoType()
         auto_type.set_parent(object_type)
         self.context.types["AUTO_TYPE"] = auto_type
+
+        self_type = SelfType()
+        self_type.set_parent(object_type)
+        self.context.types["SELF_TYPE"] = self_type
+
+        io_type = IOType()
+        io_type.set_parent(object_type)
+        self.context.types["IO"] = io_type
 
         for cl in node.cool_class_list:
             self.visit(cl)
@@ -245,6 +259,9 @@ class TypeChecker:
     @visitor.when(Dispatch)
     def visit(self, node, scope):  # noqa: F811
         exp_type = self.visit(node.exp, scope)
+        if exp_type.name == "AUTO_TYPE":
+            return exp_type
+
         try:
             method = exp_type.get_method(node.id)
         except SemanticError as e:
@@ -484,6 +501,7 @@ class TypeChecker:
                 VARIABLE_NOT_DEFINED % (node.id, self.current_method.name)
             )
             return ErrorType()
+
         return var.type
 
     @visitor.when(NewType)
