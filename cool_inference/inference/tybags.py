@@ -68,6 +68,7 @@ class TyBags:
 
     def modify_variable(self, name, types):
         try:
+            _ = self.vars[name]
             self.vars[name] = set(types)
         except KeyError as e:
             if self.parent is not None:
