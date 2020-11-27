@@ -29,7 +29,6 @@ from cool_inference.ast import (
     IntExp,
     StringExp,
     BoolExp,
-    Binary,
     Plus,
     Minus,
     Mult,
@@ -90,6 +89,7 @@ class BagsCollector:
     def visit(self, node, tybags):  # noqa: F811
         self.current_method = self.current_type.get_method(node.id)
         method_tybags = tybags.create_child(node)
+        self.current_method.tybags = method_tybags
 
         for pname, ptype in zip(
             self.current_method.param_names, self.current_method.param_types
@@ -158,10 +158,41 @@ class BagsCollector:
     def visit(self, node, tybags):  # noqa: F811
         self.visit(node.exp, tybags)
 
-    @visitor.when(Binary)
-    def visit(self, node, tybags):  # noqa: F811
+    def binary_visit(self, node, tybags):
         self.visit(node.left, tybags)
         self.visit(node.right, tybags)
+
+    @visitor.when(Plus)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
+
+    @visitor.when(Minus)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
+
+    @visitor.when(Div)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
+
+    @visitor.when(Mult)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
+
+    @visitor.when(Leq)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
+
+    @visitor.when(Eq)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
+
+    @visitor.when(Le)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
+
+    @visitor.when(WhileLoop)
+    def visit(self, node, tybags):  # noqa: F811
+        self.binary_visit(node, tybags)
 
     @visitor.when(IfThenElse)
     def visit(self, node, tybags):  # noqa: F811
@@ -223,13 +254,7 @@ class BagsReducer:
 
     @visitor.when(Assign)
     def visit(self, node, tybags, restriction):  # noqa: F811
-        types = self.visit(
-            node.value,
-            tybags,
-            []
-            if tybags.find_variable(node.id) is None
-            else tybags.find_variable(node.id),
-        )
+        types = self.visit(node.value, tybags, [])
 
         tybags.reduce_bag(node, types)
         return tybags.find_variable(node.id)
@@ -237,22 +262,44 @@ class BagsReducer:
     # TODO fix dispatch. Find an elegant way to do it.
     @visitor.when(Dispatch)
     def visit(self, node, tybags, restriction):  # noqa: F811
-        exp_type = self.context.types[list(self.visit(node.exp, tybags, []))[0]]
+        exp_types = self.visit(node.exp, tybags, [])
+        if len(exp_types) > 1:
+            types_whith_method = []
+            return_types = []
+            for key, value in self.context.types.items():
+                for method in value.methods:
+                    if (
+                        key in exp_types
+                        and method.name == node.id
+                        and len(method.param_names) == len(node.exp_list)
+                    ):
+                        types_whith_method.append(key)
+                        return_types.append(method.return_type.name)
+                        break
 
-        for arg in node.exp_list:
-            arg_types = self.visit(arg, tybags, [])
-            tybags.reduce_bag(arg, arg_types)
+            if len(types_whith_method) == 0:
+                error = f"""
+                There is not possible type of expression that
+                have {node.id} method with {len(node.exp_list)} params
+                """
+                if error not in self.errors:
+                    self.errors.append(error)
+                return set([self.context.types["ERROR"]])
 
-        while tybags.parent is not None:
-            tybags = tybags.parent
+            tybags.reduce_bag(node.exp, types_whith_method)
+            return set(return_types)
 
-        for _, ty in tybags.children.items():
+        elif len(exp_types) == 1:
+            exp_type = self.context.types[list(exp_types)[0]]
+            method = exp_type.get_method(node.id)
 
-            if list(ty.vars["self"])[0] == exp_type.name:
-                tybags = ty
-                break
+            function_ty = method.tybags
 
-        return tybags.find_variable(node.id)
+            for arg, param in zip(node.exp_list, method.param_names):
+                arg_types = self.visit(arg, tybags, function_ty.vars[param])
+                function_ty.reduce_bag(None, arg_types, name=param)
+
+            return function_ty.find_variable(node.id)
 
     # TODO
     @visitor.when(StaticDispatch)
@@ -406,6 +453,9 @@ class BagsReducer:
 
     @visitor.when(IdExp)
     def visit(self, node, tybags, restriction):  # noqa: F811
+        if len(restriction) > 0:
+            tybags.reduce_bag(node, restriction)
+
         return tybags.find_variable(node.id)
 
     @visitor.when(NewType)

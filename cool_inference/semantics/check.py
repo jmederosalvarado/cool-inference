@@ -88,6 +88,10 @@ class TypeCollector(object):
         string_type.set_parent(object_type)
         self.context.types["String"] = string_type
 
+        error_type = ErrorType()
+        error_type.set_parent(object_type)
+        self.context.types["ERROR"] = error_type
+
         auto_type = AutoType()
         auto_type.set_parent(object_type)
         self.context.types["AUTO_TYPE"] = auto_type
