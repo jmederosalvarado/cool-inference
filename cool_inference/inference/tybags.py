@@ -3,7 +3,6 @@ class TyBags:
         self.vars = {}
         self.parent = parent
         self.children = {}
-        self.index = 0 if parent is None else len(parent)
 
     def __len__(self):
         return len(self.vars)
@@ -26,10 +25,6 @@ class TyBags:
     def __repr__(self):
         return str(self)
 
-    # key tiene tipo node, esto lo hago para definir en la primera pasada
-    # un ambiente de bolsas de tipo nuevo para cada método, let, etc, durante
-    # la primera pasada. Y para poder acceder al que le corresponde a cada
-    # uno durante la segunda pasada.
     def create_child(self, key):
         child = TyBags(self)
         self.children[key] = child
@@ -38,32 +33,27 @@ class TyBags:
     def reduce_bag(self, node, types):
         types = set(types)
 
+        # TODO: preguntar especificamente el tipo del nodo
         try:
             var_name = node.id
         except AttributeError:
-            return False
+            return
 
         var_types = self.find_variable(var_name)
 
-        inters = var_types & types
+        intersection = var_types.intersection(types)
 
-        if len(inters) == 0:
-            if "@error" not in var_types and "@error" not in types:
-                self.modify_variable(var_name, set.union(var_types, types) + ["@error"])
-            else:
-                self.modify_variable(var_name, set.union(var_types, types))
+        if len(intersection) == 0:
+            self.modify_variable(var_name, set.union(var_types, types, {"@error"}))
 
         else:
+            # TODO: revisar estos casos
             if "@error" in var_types:
                 self.modify_variable(var_name, set.union(var_types, types))
             elif "@error" in types:
                 self.modify_variable(var_name, types)
             else:
-                self.modify_variable(var_name, inters)
-
-        new_var_types = self.find_variable(var_name)
-
-        return not sorted(var_types) == sorted(new_var_types)
+                self.modify_variable(var_name, intersection)
 
     def define_variable(self, name, types):
         self.vars[name] = set(types)
@@ -72,17 +62,50 @@ class TyBags:
         try:
             return self.vars[name]
         except KeyError:
-            if self.parent is not None:
-                return self.parent.find_variable(name)
-            else:
-                return None
+            return self.parent and self.parent.find_variable(name)
 
     def modify_variable(self, name, types):
         try:
-            _ = self.vars[name]
-            self.vars[name] = types
-        except KeyError:
+            self.vars[name] = set(types)
+        except KeyError as e:
             if self.parent is not None:
                 self.parent.modify_variable(name, types)
             else:
-                None
+                raise e
+
+    # este nombre esta al berro
+    def clean(self):
+        for _, value in self.vars.items():
+            if "@error" in value:
+                value.remove("@error")
+        for _, chil in self.children.items():
+            chil.clean()
+
+    # TODO: creo que esto esta maja
+    def compare(self, ty_bags):
+        if len(self.vars) != len(ty_bags.vars) or len(self.children) != len(
+            ty_bags.children
+        ):
+            return False
+
+        for (key1, value1), (key2, value2) in zip(
+            self.vars.items(), ty_bags.vars.items()
+        ):
+            if key1 != key2 or value1 != value2:
+                return False
+        for (key1, value1), (key2, value2) in zip(
+            self.children.items(), ty_bags.children.items()
+        ):
+            if key1 != key2 or not value1.compare(value2):
+                return False
+        return True
+
+    # TODO: este metodo deberia devolver un nuevo tybag igual a self
+    def clone(self, ty_bags):
+        self.parent = ty_bags.parent
+        for key, value in ty_bags.vars.items():
+            self.vars[key] = value.copy()
+        for key, value in ty_bags.children.items():
+            new_ty = TyBags()
+            new_ty.clone(value)
+            self.children[key] = new_ty
