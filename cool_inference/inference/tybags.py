@@ -30,27 +30,29 @@ class TyBags:
         self.children[key] = child
         return child
 
-    def reduce_bag(self, node, types):
+    def reduce_bag(self, node, types, name=None):
         types = set(types)
 
         # TODO: preguntar especificamente el tipo del nodo
         try:
             var_name = node.id
         except AttributeError:
-            return
+            if name is not None:
+                var_name = name
+            else:
+                return
 
         var_types = self.find_variable(var_name)
-
         intersection = var_types.intersection(types)
 
         if len(intersection) == 0:
-            self.modify_variable(var_name, set.union(var_types, types, {"@error"}))
+            self.modify_variable(var_name, set.union(var_types, types, {"@union"}))
 
         else:
             # TODO: revisar estos casos
-            if "@error" in var_types:
+            if "@union" in var_types:
                 self.modify_variable(var_name, set.union(var_types, types))
-            elif "@error" in types:
+            elif "@union" in types:
                 self.modify_variable(var_name, types)
             else:
                 self.modify_variable(var_name, intersection)
@@ -66,18 +68,19 @@ class TyBags:
 
     def modify_variable(self, name, types):
         try:
-            self.vars[name] = set(types)
-        except KeyError as e:
+            _ = self.vars[name]
+            self.vars[name] = types
+        except KeyError:
             if self.parent is not None:
                 self.parent.modify_variable(name, types)
             else:
-                raise e
+                None
 
     # este nombre esta al berro
     def clean(self):
         for _, value in self.vars.items():
-            if "@error" in value:
-                value.remove("@error")
+            if "@union" in value:
+                value.remove("@union")
         for _, chil in self.children.items():
             chil.clean()
 
