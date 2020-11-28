@@ -39,6 +39,9 @@ def get_std_printers():
     def print_exit(exit_):
         print(f"---------> {exit_}")
 
+    def print_ast(exit_):
+        print(f"---------> {exit_}")
+
     return print_title, print_error, print_success, print_exit
 
 
@@ -48,7 +51,6 @@ def pipeline(code):
     except ImportError:
         printers = get_std_printers()
 
-    printers = get_std_printers()
     print_title, print_error, print_success, print_exit = printers
 
     # parsing
