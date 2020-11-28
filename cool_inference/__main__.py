@@ -4,28 +4,78 @@ from cool_inference.parsing.parser import parser
 from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeChecker
 
 
+def get_rich_printers():
+    from rich import print
+
+    def print_title(title):
+        styled = f":point_right: [bold cyan]{title}[/]"
+        print(styled)
+
+    def print_error(error):
+        styled = f":cry: [red]{error}[/]"
+        print(styled)
+
+    def print_success(success):
+        styled = f":smiley: [green]{success}[/]"
+        print(styled)
+
+    def print_exit(exit_):
+        styled = f":x: [bold red]{exit_}[/]"
+        print(styled)
+
+    return print_title, print_error, print_success, print_exit
+
+
+def get_std_printers():
+    def print_title(title):
+        print(f"---------> {title}")
+
+    def print_error(error):
+        print(f"[error] {error}")
+
+    def print_success(success):
+        print(f"[success] {success}")
+
+    def print_exit(exit_):
+        print(f"---------> {exit_}")
+
+    return print_title, print_error, print_success, print_exit
+
+
 def pipeline(code):
+    try:
+        printers = get_rich_printers()
+    except ImportError:
+        printers = get_std_printers()
+
+    printers = get_std_printers()
+    print_title, print_error, print_success, print_exit = printers
+
     # parsing
+
+    print_title("Tokenizing/Parsing")
 
     try:
         ast = parser.parse(code)
     except UnexpectedCharacters as e:
-        print("Lexical error")
-        print(e)
+        print_error(
+            f"Unexpected character {code[e.pos_in_stream]} at ({e.line}, {e.column})"
+        )
         print()
-        print("Stopped because of lexical error")
+        print_exit("Stopped because of lexical error")
         return
     except UnexpectedToken as e:
-        print("Parsing error")
-        print(e)
+        print_error(f"Unexpected token {e.token} at ({e.line}, {e.column})")
         print()
-        print("Stopped because of parsing error")
+        print_exit("Stopped because of parsing error")
         return
 
-    print("Parsing finished without errors")
+    print_success("Finished without errors")
     print()
 
     # type collection
+
+    print_title("Type collection")
 
     type_collector_errors = []
 
@@ -33,16 +83,17 @@ def pipeline(code):
     collector.visit(ast)
 
     if type_collector_errors:
-        print("Type collector errors")
         for e in type_collector_errors:
-            print(e)
+            print_error(e)
     else:
-        print("Type collector finished without errors")
+        print_success("Finished without errors")
     print()
 
     context = collector.context
 
     # type building
+
+    print_title("Type building")
 
     type_builder_errors = []
 
@@ -50,14 +101,15 @@ def pipeline(code):
     builder.visit(ast)
 
     if type_builder_errors:
-        print("Type builder errors")
         for e in type_builder_errors:
-            print(e)
+            print_error(e)
     else:
-        print("Type builder finished without errors")
+        print_success("Finished without errors")
     print()
 
     # type checking
+
+    print_title("Type checking")
 
     type_checker_errors = []
 
@@ -65,15 +117,14 @@ def pipeline(code):
     checker.visit(ast)
 
     if type_checker_errors:
-        print("Type checker errors")
         for e in type_checker_errors:
-            print(e)
+            print_error(e)
     else:
-        print("Type checker finished without errors")
+        print_success("Finished without errors")
     print()
 
     if type_collector_errors or type_builder_errors or type_checker_errors:
-        print("Stopped because of semantic errors")
+        print_exit("Stopped because of semantic errors")
         return
 
 
