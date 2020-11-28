@@ -140,7 +140,7 @@ class TypeBuilder:
             try:
                 _type = self.context.get_type(node.inherit)
             except SemanticError as error:
-                _type = ErrorType()
+                _type = self.context.get_type("ERROR")
                 self.errors.append(error.text)
             parent_type = _type
 
@@ -157,7 +157,7 @@ class TypeBuilder:
         try:
             _type = self.context.get_type(node.type)
         except SemanticError as error:
-            _type = ErrorType()
+            _type = self.context.get_type("ERROR")
             self.errors.append(error.text)
 
         try:
@@ -174,14 +174,14 @@ class TypeBuilder:
             try:
                 _type = self.context.get_type(p)
             except SemanticError as error:
-                _type = ErrorType()
+                _type = self.context.get_type("ERROR")
                 self.errors.append(error.text)
             param_types.append(_type)
 
         try:
             _type = self.context.get_type(node.type)
         except SemanticError as error:
-            _type = ErrorType()
+            _type = self.context.get_type("ERROR")
             self.errors.append(error.text)
         return_type = _type
 
@@ -266,7 +266,7 @@ class TypeChecker:
             method = exp_type.get_method(node.id)
         except SemanticError as e:
             self.errors.append(e.text)
-            return ErrorType()
+            return self.context.get_type("ERROR")
 
         if len(node.exp_list) != len(method.param_names):
             self.errors.append(
@@ -288,7 +288,7 @@ class TypeChecker:
             method = exp_type.get_method(node.id)
         except SemanticError as e:
             self.errors.append(e.text)
-            return ErrorType()
+            return self.context.get_type("ERROR")
 
         if len(node.exp_list) != len(method.param_names):
             self.errors.append(
@@ -319,7 +319,7 @@ class TypeChecker:
             try:
                 typex = self.context.get_type(_type)
             except SemanticError as e:
-                typex = ErrorType()
+                typex = self.context.get_type("ERROR")
                 self.errors.append(e.text)
 
             if expx is None:
@@ -347,7 +347,7 @@ class TypeChecker:
             try:
                 typex = self.context.get_type(_type)
             except SemanticError as e:
-                typex = ErrorType()
+                typex = self.context.get_type("ERROR")
                 self.errors.append(e.text)
 
             new_scope = scope.create_child()
@@ -379,7 +379,7 @@ class TypeChecker:
             self.errors.append(
                 VARIABLE_NOT_DEFINED % (node.id, self.current_method.name)
             )
-            var_type = ErrorType()
+            var_type = self.context.get_type("ERROR")
         else:
             var_type = var.type
 
@@ -414,7 +414,7 @@ class TypeChecker:
         return self.visit(node.exp, scope)
 
     def arith(self, node, scope):
-        int_type = IntType()
+        int_type = self.context.get_type("Int")
         left_type = self.visit(node.left, scope)
         right_type = self.visit(node.right, scope)
         if not left_type.conforms_to(int_type) or not right_type.conforms_to(int_type):
@@ -483,15 +483,15 @@ class TypeChecker:
 
     @visitor.when(StringExp)
     def visit(self, node, scope):  # noqa: F811
-        return StringType()
+        return self.context.get_type("String")
 
     @visitor.when(BoolExp)
     def visit(self, node, scope):  # noqa: F811
-        return BoolType()
+        return self.context.get_type("Bool")
 
     @visitor.when(IntExp)
     def visit(self, node, scope):  # noqa: F811
-        return IntType()
+        return self.context.get_type("Int")
 
     @visitor.when(IdExp)
     def visit(self, node, scope):  # noqa: F811
@@ -500,7 +500,7 @@ class TypeChecker:
             self.errors.append(
                 VARIABLE_NOT_DEFINED % (node.id, self.current_method.name)
             )
-            return ErrorType()
+            return self.context.get_type("ERROR")
 
         return var.type
 
