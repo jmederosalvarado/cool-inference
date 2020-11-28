@@ -1,12 +1,6 @@
 from cool_inference.inference.tybags import TyBags
 from cool_inference.utils.lca import lowest_common_ancestor, solve_bag
 import cool_inference.utils.visitor as visitor
-from cool_inference.semantics.semantics import (
-    IntType,
-    BoolType,
-    StringType,
-    AutoType,
-)
 from cool_inference.ast import (
     Program,
     CoolClass,

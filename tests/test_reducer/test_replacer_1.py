@@ -123,4 +123,3 @@ def test1():
     print("]")
 
     assert errors == []
-
