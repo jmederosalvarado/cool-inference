@@ -17,3 +17,11 @@ def lowest_common_ancestor(type_1, type_2, context):
         typex = typex.parent
 
     return object_type
+
+
+def solve_bag(bag, context):
+    result = context.get_type(list(bag)[0])
+    for ty in bag:
+        ty = context.get_type(ty)
+        result = lowest_common_ancestor(result, ty, context)
+    return result.name
