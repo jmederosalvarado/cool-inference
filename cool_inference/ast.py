@@ -69,7 +69,7 @@ class Param(AstNode):
         return str(self.id + ": " + self.type)
 
 
-class Expression(CoolClass):
+class Expression(AstNode):
     pass
 
 
