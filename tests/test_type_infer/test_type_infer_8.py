@@ -4,27 +4,25 @@ from cool_inference.inference.tyinfer import BagsCollector, BagsReducer
 from cool_inference.utils.utils import search_for_errors
 
 
-def test2():
-    test2 = """
+def test6():
+    test6 = """
         class A {
+            step(q : AUTO_TYPE) : AUTO_TYPE { q.translate(1,1) } ;
 
-            met1 ( e : String ) : AUTO_TYPE {
-                    {
-                    b <- "asd" ;
-                    b <- true ;
-                    b <- c ;
-                    c ;
-                    } + 5
+            main() : Object {
+                let p : AUTO_TYPE in
+                    step(p)
             } ;
-
-            b : AUTO_TYPE ;
-            c : AUTO_TYPE ;
         } ;
 
-
+        class Point {
+            translate ( a : Int, b:Int ) : Int {
+                a + b
+            } ;
+        } ;
             """
 
-    ast = parser.parse(test2)
+    ast = parser.parse(test6)
 
     errors = []
 
@@ -85,6 +83,4 @@ def test2():
         print("\t", error)
     print("]")
 
-    assert errors == [
-        "Can't infer type of: 'b', between['A', 'Bool', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",  # noqa: E501
-    ]
+    assert errors == []

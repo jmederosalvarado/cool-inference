@@ -26,7 +26,6 @@ class Method:
         self.param_names = param_names
         self.param_types = params_types
         self.return_type = return_type
-        self.tybags = None
 
     def __str__(self):
         params = ", ".join(
@@ -156,20 +155,6 @@ class ErrorType(Type):
 
     def __eq__(self, other):
         return isinstance(other, Type)
-
-
-class VoidType(Type):
-    def __init__(self):
-        Type.__init__(self, "<void>")
-
-    def conforms_to(self, other):
-        raise Exception("Invalid type: void type.")
-
-    def bypass(self):
-        return True
-
-    def __eq__(self, other):
-        return isinstance(other, VoidType)
 
 
 class ObjectType(Type):

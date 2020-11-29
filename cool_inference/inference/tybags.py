@@ -31,7 +31,6 @@ class TyBags:
         return child
 
     def reduce_bag(self, node, types, name=None):
-        types = set(types)
 
         # TODO: preguntar especificamente el tipo del nodo
         try:
@@ -42,7 +41,16 @@ class TyBags:
             else:
                 return
 
+        types = types.copy()
+        if "@lock" in types:
+            types.remove("@lock")
+        types = set(types)
+
         var_types = self.find_variable(var_name)
+
+        if "@lock" in var_types:
+            return
+
         intersection = var_types.intersection(types)
 
         if len(intersection) == 0:
@@ -57,14 +65,20 @@ class TyBags:
             else:
                 self.modify_variable(var_name, intersection)
 
-    def define_variable(self, name, types):
-        self.vars[name] = set(types)
+    def define_variable(self, name, types, lock=False):
+        if lock:
+            self.vars[name] = set.union(set(types), {"@lock"})
+        else:
+            self.vars[name] = set(types)
 
     def find_variable(self, name):
         try:
             return self.vars[name]
         except KeyError:
-            return self.parent and self.parent.find_variable(name)
+            if self.parent is not None:
+                return self.parent.find_variable(name)
+            else:
+                return None
 
     def modify_variable(self, name, types):
         try:
@@ -83,6 +97,13 @@ class TyBags:
                 value.remove("@union")
         for _, chil in self.children.items():
             chil.clean()
+
+    def clean_locks(self):
+        for _, value in self.vars.items():
+            if "@lock" in value:
+                value.remove("@lock")
+        for _, chil in self.children.items():
+            chil.clean_locks()
 
     # TODO: creo que esto esta maja
     def compare(self, ty_bags):

@@ -1,30 +1,29 @@
 from cool_inference.parsing.parser import parser
 from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeChecker
-from cool_inference.inference.tyinfer import BagsCollector, BagsReducer
-from cool_inference.utils.utils import search_for_errors
+from cool_inference.inference.tyinfer import BagsCollector, BagsReducer, BagsReplacer
 
 
-def test2():
-    test2 = """
+def test9():
+    test9 = """
         class A {
 
             met1 ( e : String ) : AUTO_TYPE {
                     {
-                    b <- "asd" ;
-                    b <- true ;
-                    b <- c ;
-                    c ;
-                    } + 5
+                        a <- 5 ;
+                        a <- b ;
+                        b <- c ;
+                    }
             } ;
 
-            b : AUTO_TYPE ;
+            a : Int ;
+            b : Int ;
             c : AUTO_TYPE ;
         } ;
 
 
             """
 
-    ast = parser.parse(test2)
+    ast = parser.parse(test9)
 
     errors = []
 
@@ -78,13 +77,45 @@ def test2():
     print(bags)
     print("")
 
-    search_for_errors(bags, errors)
-
     print("Errors: [")
     for error in errors:
         print("\t", error)
     print("]")
 
-    assert errors == [
-        "Can't infer type of: 'b', between['A', 'Bool', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",  # noqa: E501
-    ]
+    errors = []
+
+    print("================= BAGS REPLACER=================")
+    replacer = BagsReplacer(bags, context, errors)
+    replacer.visit(ast)
+
+    print("================= TYPE COLLECTOR =================")
+    errors = []
+
+    collector = TypeCollector(errors)
+    collector.visit(ast)
+
+    context = collector.context
+    print("Errors:", errors)
+    print("Context:")
+    print(context)
+    print("")
+
+    print("================= TYPE BUILDER =================")
+    builder = TypeBuilder(context, errors)
+    builder.visit(ast)
+    print("Errors: [")
+    for error in errors:
+        print("\t", error)
+    print("]")
+    print("Context:")
+    print(context)
+
+    print("=============== CHECKING TYPES ================")
+    checker = TypeChecker(context, errors)
+    _ = checker.visit(ast)
+    print("Errors: [")
+    for error in errors:
+        print("\t", error)
+    print("]")
+
+    assert errors == ["""Cannot convert "Object" into "Int"."""]
