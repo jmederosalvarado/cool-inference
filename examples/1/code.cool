@@ -1,9 +1,18 @@
-class Main inherits Object {
-    a : Int <- asd ;
-    b : String <- 1000;
-    c : Bool <- true;
-
-    met ( d : Int ) : Bool {
-        c <- false
+class A {
+    met1 ( e : String ) : AUTO_TYPE {
+            {
+                c <- a ;
+                c <- b ;
+            }
     } ;
+
+    a : C ;
+    b : B ;
+    c : AUTO_TYPE ;
+} ;
+
+class C inherits B {
+} ;
+
+class B {
 } ;

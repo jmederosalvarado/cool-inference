@@ -2,6 +2,7 @@ import sys
 from lark import UnexpectedCharacters, UnexpectedToken
 from cool_inference.parsing.parser import parser
 from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeChecker
+from cool_inference.inference.tyinfer import BagsCollector, BagsReducer, BagsReplacer
 
 
 def get_rich_printers():
@@ -128,6 +129,104 @@ def pipeline(code):
     if type_collector_errors or type_builder_errors or type_checker_errors:
         print_exit("Stopped because of semantic errors")
         return
+
+    # bags collection
+
+    print_title("Collecting tybags")
+
+    bags_collector_errors = []
+
+    bags_collector = BagsCollector(context, bags_collector_errors)
+    bags = bags_collector.visit(ast)
+
+    if bags_collector_errors:
+        for e in bags_collector_errors:
+            print_error(e)
+    else:
+        print_success("Finished without errors")
+    print()
+
+    # bags reducing
+
+    print_title("Reducing tybags")
+
+    bags_reducer_errors = []
+
+    bags_reducer = BagsReducer(bags, context, bags_reducer_errors)
+    bags = bags_reducer.visit(ast)
+
+    if bags_reducer_errors:
+        for e in bags_reducer_errors:
+            print_error(e)
+    else:
+        print_success("Finished without errors")
+    print()
+
+    # bags replacing
+
+    print_title("Replacing tybags in ast")
+
+    bags_replacer_errors = []
+
+    bags_replacer = BagsReplacer(bags, context, bags_replacer_errors)
+    bags_replacer.visit(ast)
+
+    if bags_replacer_errors:
+        for e in bags_replacer_errors:
+            print_error(e)
+    else:
+        print_success("Finished without errors")
+    print()
+
+    # type collection
+
+    print_title("Type collection")
+
+    type_collector_errors = []
+
+    collector = TypeCollector(type_collector_errors)
+    collector.visit(ast)
+
+    if type_collector_errors:
+        for e in type_collector_errors:
+            print_error(e)
+    else:
+        print_success("Finished without errors")
+    print()
+
+    context = collector.context
+
+    # type building
+
+    print_title("Type building")
+
+    type_builder_errors = []
+
+    builder = TypeBuilder(context, type_builder_errors)
+    builder.visit(ast)
+
+    if type_builder_errors:
+        for e in type_builder_errors:
+            print_error(e)
+    else:
+        print_success("Finished without errors")
+    print()
+
+    # type checking
+
+    print_title("Type checking")
+
+    type_checker_errors = []
+
+    checker = TypeChecker(context, type_checker_errors)
+    checker.visit(ast)
+
+    if type_checker_errors:
+        for e in type_checker_errors:
+            print_error(e)
+    else:
+        print_success("Finished without errors")
+    print()
 
 
 def main():
