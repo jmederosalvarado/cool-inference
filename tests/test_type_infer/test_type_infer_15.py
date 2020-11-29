@@ -3,6 +3,7 @@ from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeCheck
 from cool_inference.inference.tyinfer import BagsCollector, BagsReducer
 from cool_inference.utils.utils import search_for_errors
 
+
 # TODO
 def test14():
     test14 = """
@@ -101,6 +102,6 @@ def test14():
     assert errors == [
         "Can't infer type of: 'f', between['A', 'B']",
         "Can't infer type of: 'x', between['A', 'B']",
-        "Can't infer type of: 'f', between['A', 'B', 'Bool', 'C', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",
-        "Can't infer type of: 'x', between['A', 'B', 'Bool', 'C', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",
+        "Can't infer type of: 'f', between['A', 'B', 'Bool', 'C', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",  # noqa: E501
+        "Can't infer type of: 'x', between['A', 'B', 'Bool', 'C', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",  # noqa: E501
     ]

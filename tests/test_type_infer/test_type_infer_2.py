@@ -86,5 +86,5 @@ def test2():
     print("]")
 
     assert errors == [
-        "Can't infer type of: 'b', between['A', 'Bool', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",
+        "Can't infer type of: 'b', between['A', 'Bool', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",  # noqa: E501
     ]
