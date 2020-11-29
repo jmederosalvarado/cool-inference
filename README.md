@@ -2,7 +2,16 @@
 
 ## Utilización
 
-### Ejemplos
+AL ejecutar la linea siguiente se imprimira en la terminal los detalles del
+proceso de inferencia de tipos y chequeo semántico. Para una mejor visualización
+de estos detalles, instalar [rich](https://github.com/willmcgugan/rich).
+En la carpeta que contiene el archivo con el código se generara un nuevo archivo
+que contiene el mismo código pero con los tipos ya inferidos. Se provee una carpeta
+con ejemplos de programas de cool y la salida esperada.
+
+```bash
+python -m cool_inference <path to cool file>
+```
 
 ## Detalles
 
