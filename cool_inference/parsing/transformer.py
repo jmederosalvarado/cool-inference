@@ -28,6 +28,7 @@ from cool_inference.ast import (
     IntExp,
     StringExp,
     BoolExp,
+    Tilde,
 )
 
 
@@ -128,7 +129,7 @@ class CoolASTTransformer(Transformer):
         return IsVoid(children[1])
 
     def tilde_expr(self, children):
-        return IsVoid(children[1])
+        return Tilde(children[1])
 
     def dispatch(self, children):
         if children[1].value == ".":
