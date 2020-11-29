@@ -45,32 +45,6 @@ def get_std_printers():
     return print_title, print_error, print_success, print_exit
 
 
-def get_rich_ast_prompt_printer():
-    from rich import print
-    from rich.prompt import Confirm
-
-    def prompt_ast(prompt):
-        return Confirm.ask(prompt)
-
-    def print_ast(ast):
-        print(f"[cyan]{ast}[/cyan]")
-
-    return prompt_ast, print_ast
-
-
-def get_std_ast_prompt_printer():
-    def prompt_ast(prompt):
-        answer = ""
-        while answer not in ("y", "n"):
-            answer = input(prompt)
-        return answer == "y"
-
-    def print_ast(ast):
-        print(ast)
-
-    return prompt_ast, print_ast
-
-
 def pipeline(code):
     try:
         printers = get_rich_printers()
@@ -154,14 +128,6 @@ def pipeline(code):
     if type_collector_errors or type_builder_errors or type_checker_errors:
         print_exit("Stopped because of semantic errors")
         return
-
-    try:
-        ask_for_ast, print_ast = get_rich_ast_prompt_printer()
-    except ImportError:
-        ask_for_ast, print_ast = get_std_ast_prompt_printer()
-
-    if ask_for_ast("View AST with inferred types?"):
-        print_ast(ast)
 
 
 def main():
