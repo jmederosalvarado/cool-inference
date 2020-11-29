@@ -1,30 +1,43 @@
 from cool_inference.parsing.parser import parser
 from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeChecker
-from cool_inference.inference.tyinfer import BagsCollector, BagsReducer, BagsReplacer
+from cool_inference.inference.tyinfer import BagsCollector, BagsReducer
+from cool_inference.utils.utils import search_for_errors
 
-
-def test1():
-    test1 = """
-        class A {
-            d : AUTO_TYPE <- 2 ;
-
-            met1 ( e : String ) : AUTO_TYPE {
-                    b.met2 ( a )
+# TODO
+def test14():
+    test14 = """
+        class C {
+            a : Int ;
+            b : A ;
+            c : B ;
+            f ( x : AUTO_TYPE ) : AUTO_TYPE {
+                    {
+                        x <- b ;
+                        x.f(a) ;
+                        x <- c ;
+                    }
             } ;
+        } ;
 
-            a : AUTO_TYPE <- 5 ;
-            b : B <- new B ;
+        class A {
+
+            f ( x : AUTO_TYPE ) : AUTO_TYPE {
+                    x
+            } ;
 
         } ;
 
         class B {
-            met2 ( f : AUTO_TYPE ) : Int {
-                f + 5
-            }  ;
-        } ;
-        """
 
-    ast = parser.parse(test1)
+            f ( x : AUTO_TYPE ) : AUTO_TYPE {
+                    x
+            } ;
+        } ;
+
+
+            """
+
+    ast = parser.parse(test14)
 
     errors = []
 
@@ -78,48 +91,16 @@ def test1():
     print(bags)
     print("")
 
+    search_for_errors(bags, errors)
+
     print("Errors: [")
     for error in errors:
         print("\t", error)
     print("]")
 
-    if errors != []:
-        assert False
-
-    errors = []
-
-    print("================= BAGS REPLACER=================")
-    replacer = BagsReplacer(bags, context, errors)
-    replacer.visit(ast)
-
-    print("================= TYPE COLLECTOR =================")
-    errors = []
-
-    collector = TypeCollector(errors)
-    collector.visit(ast)
-
-    context = collector.context
-    print("Errors:", errors)
-    print("Context:")
-    print(context)
-    print("")
-
-    print("================= TYPE BUILDER =================")
-    builder = TypeBuilder(context, errors)
-    builder.visit(ast)
-    print("Errors: [")
-    for error in errors:
-        print("\t", error)
-    print("]")
-    print("Context:")
-    print(context)
-
-    print("=============== CHECKING TYPES ================")
-    checker = TypeChecker(context, errors)
-    _ = checker.visit(ast)
-    print("Errors: [")
-    for error in errors:
-        print("\t", error)
-    print("]")
-
-    assert errors == []
+    assert errors == [
+        "Can't infer type of: 'f', between['A', 'B']",
+        "Can't infer type of: 'x', between['A', 'B']",
+        "Can't infer type of: 'f', between['A', 'B', 'Bool', 'C', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",
+        "Can't infer type of: 'x', between['A', 'B', 'Bool', 'C', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",
+    ]

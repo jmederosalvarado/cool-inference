@@ -3,28 +3,30 @@ from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeCheck
 from cool_inference.inference.tyinfer import BagsCollector, BagsReducer, BagsReplacer
 
 
-def test1():
-    test1 = """
+def test9():
+    test9 = """
         class A {
-            d : AUTO_TYPE <- 2 ;
 
             met1 ( e : String ) : AUTO_TYPE {
-                    b.met2 ( a )
+                    {
+                        c <- a ;
+                        c <- b ;
+                    }
             } ;
 
-            a : AUTO_TYPE <- 5 ;
-            b : B <- new B ;
-
+            a : C ;
+            b : B ;
+            c : AUTO_TYPE ;
         } ;
-
+        class C inherits B {
+        } ;
         class B {
-            met2 ( f : AUTO_TYPE ) : Int {
-                f + 5
-            }  ;
         } ;
-        """
 
-    ast = parser.parse(test1)
+
+            """
+
+    ast = parser.parse(test9)
 
     errors = []
 
@@ -82,9 +84,6 @@ def test1():
     for error in errors:
         print("\t", error)
     print("]")
-
-    if errors != []:
-        assert False
 
     errors = []
 

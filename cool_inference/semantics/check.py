@@ -2,7 +2,6 @@ import cool_inference.utils.visitor as visitor
 from cool_inference.utils.lca import lowest_common_ancestor
 from cool_inference.semantics.semantics import (
     SemanticError,
-    VoidType,
     ErrorType,
     Context,
     Scope,
@@ -75,10 +74,6 @@ class TypeCollector(object):
         int_type = IntType()
         int_type.set_parent(object_type)
         self.context.types["Int"] = int_type
-
-        void_type = VoidType()
-        void_type.set_parent(object_type)
-        self.context.types["Void"] = void_type
 
         bool_type = BoolType()
         bool_type.set_parent(object_type)
@@ -336,12 +331,11 @@ class TypeChecker:
 
         return let_type
 
-    # TODO
     @visitor.when(Case)
     def visit(self, node, scope):  # noqa: F811
         _ = self.visit(node.exp, scope)
         return_type = None
-        # first = True
+        first = True
 
         for idx, _type, case_exp in node.case_list:
             try:
@@ -354,11 +348,13 @@ class TypeChecker:
             new_scope.define_variable(idx, typex)
             static_type = self.visit(case_exp, new_scope)
 
-            # if first:
-            #     return_type = static_type
-            #     first = False
-            # else:
-            return_type = lowest_common_ancestor(return_type, static_type, self.context)
+            if first:
+                return_type = static_type
+                first = False
+            else:
+                return_type = lowest_common_ancestor(
+                    return_type, static_type, self.context
+                )
 
         return return_type
 
@@ -389,7 +385,6 @@ class TypeChecker:
 
         return var_type
 
-    # TODO
     @visitor.when(Not)
     def visit(self, node, scope):  # noqa: F811
         exp_type = self.visit(node.exp, scope)
@@ -399,10 +394,13 @@ class TypeChecker:
 
         return bool_type
 
-    # TODO
     @visitor.when(Tilde)
     def visit(self, node, scope):  # noqa: F811
-        pass
+        exp_type = self.visit(node.exp, scope)
+        int_type = self.context.get_type("Int")
+        if not exp_type.conforms_to(int_type):
+            self.errors.append(INCOMPATIBLE_TYPES % (exp_type, int_type))
+        return int_type
 
     @visitor.when(IsVoid)
     def visit(self, node, scope):  # noqa: F811
@@ -468,7 +466,6 @@ class TypeChecker:
 
         return self.context.get_type("Object")
 
-    # TODO
     @visitor.when(IfThenElse)
     def visit(self, node, scope):  # noqa: F811
         conditional_type = self.visit(node.first, scope)
@@ -476,7 +473,7 @@ class TypeChecker:
         else_type = self.visit(node.third, scope)
         bool_type = self.context.get_type("Bool")
 
-        if conditional_type != bool_type:
+        if not conditional_type.conforms_to(bool_type):
             self.errors.append(BOOL_EXPECTED % (conditional_type))
 
         return lowest_common_ancestor(then_type, else_type, self.context)

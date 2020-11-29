@@ -41,7 +41,10 @@ class TyBags:
             else:
                 return
 
-        types = set(types).difference("@lock")
+        types = types.copy()
+        if "@lock" in types:
+            types.remove("@lock")
+        types = set(types)
 
         var_types = self.find_variable(var_name)
 

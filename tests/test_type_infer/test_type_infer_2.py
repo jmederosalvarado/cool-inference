@@ -10,8 +10,6 @@ def test2():
 
             met1 ( e : String ) : AUTO_TYPE {
                     {
-                    a <- 5 ;
-                    a <- b ;
                     b <- "asd" ;
                     b <- true ;
                     b <- c ;
@@ -19,12 +17,9 @@ def test2():
                     } + 5
             } ;
 
-            a : AUTO_TYPE ;
             b : AUTO_TYPE ;
             c : AUTO_TYPE ;
-
-
-        } ;       
+        } ;
 
 
             """
@@ -91,5 +86,5 @@ def test2():
     print("]")
 
     assert errors == [
-        "Can't infer type of: 'b', between['Bool', 'Int', 'String']",
+        "Can't infer type of: 'b', between['A', 'Bool', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']",
     ]

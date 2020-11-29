@@ -86,5 +86,5 @@ def test9():
     print("]")
 
     assert errors == [
-        "Can't infer type of: 'c', between['A', 'AUTO_TYPE', 'Bool', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String', 'Void']"
+        "Can't infer type of: 'c', between['A', 'Bool', 'ERROR', 'IO', 'Int', 'Object', 'SELF_TYPE', 'String']"  # noqa: E501
     ]
