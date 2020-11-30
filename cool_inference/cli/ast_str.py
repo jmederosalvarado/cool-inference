@@ -54,9 +54,9 @@ class AstStr(object):
     @visitor.when(Block)
     def visit(self, node: Block, indent):  # noqa: F811
         expr_list = (self.visit(exp, indent + 1) for exp in node.expr_list)
-        expr_list = ("  " * (indent + 1) + exp for exp in expr_list)
+        expr_list = ("    " * (indent + 1) + exp for exp in expr_list)
         body = "\n".join(expr_list)
-        return "{{\n{body}\n{indent}}}".format(body=body, indent="  " * indent)
+        return "{{\n{body}\n{indent}}}".format(body=body, indent="    " * indent)
 
     @visitor.when(BoolExp)
     def visit(self, node: BoolExp, indent):  # noqa: F811
@@ -72,10 +72,10 @@ class AstStr(object):
             "{id}: {type} => {exp}".format(id=idx, type=typex, exp=exp)
             for (idx, typex, exp) in cases
         )
-        cases = ("  " * (indent + 1) + case for case in cases)
+        cases = ("    " * (indent + 1) + case for case in cases)
         cases = "\n".join(cases)
         return "case {exp} of\n{cases}\n{indent}esac".format(
-            exp=self.visit(node.exp, indent), cases=cases, indent="  " * indent
+            exp=self.visit(node.exp, indent), cases=cases, indent="    " * indent
         )
 
     @visitor.when(CoolClass)
@@ -84,10 +84,10 @@ class AstStr(object):
             id=node.id, parent=(node.inherit or "Object")
         )
         features = (self.visit(feat, indent + 1) for feat in node.feature_list)
-        features = ("  " * (indent + 1) + feat for feat in features)
+        features = ("    " * (indent + 1) + feat for feat in features)
         features = "\n".join(features)
         return "{decl} {{\n{feats}\n{indent}}}\n".format(
-            decl=decl, feats=features, indent="  " * indent
+            decl=decl, feats=features, indent="    " * indent
         )
 
     @visitor.when(Dispatch)
@@ -111,13 +111,13 @@ class AstStr(object):
     @visitor.when(FuncDecl)
     def visit(self, node: FuncDecl, indent):  # noqa: F811
         params = ", ".join((self.visit(p, indent) for p in node.params))
-        body = "  " * (indent + 1) + self.visit(node.body, indent + 1)
+        body = "    " * (indent + 1) + self.visit(node.body, indent + 1)
         return "{id}({params}): {type} {{\n{body}\n{indent}}}".format(
             id=node.id,
             params=params,
             type=node.type,
             body=body,
-            indent="  " * indent,
+            indent="    " * indent,
         )
 
     @visitor.when(IdExp)

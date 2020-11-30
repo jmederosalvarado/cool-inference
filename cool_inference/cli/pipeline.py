@@ -66,12 +66,12 @@ def pipeline(code):
         )
         print()
         print_exit("Stopped because of lexical error")
-        return
+        return None
     except UnexpectedToken as e:
         print_error(f"Unexpected token {e.token} at ({e.line}, {e.column})")
         print()
         print_exit("Stopped because of parsing error")
-        return
+        return None
 
     print_success("Finished without errors")
     print()
@@ -128,7 +128,7 @@ def pipeline(code):
 
     if type_collector_errors or type_builder_errors or type_checker_errors:
         print_exit("Stopped because of semantic errors")
-        return
+        return None
 
     # bags collection
 

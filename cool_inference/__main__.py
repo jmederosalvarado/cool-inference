@@ -8,6 +8,10 @@ def main():
     with open(filename) as fp:
         code = fp.read()
     ast_str = pipeline(code)
+
+    if ast_str is None:
+        return
+
     basename, extension = os.path.splitext(filename)
     with open(basename + "-inferred" + extension, "w") as fp:
         fp.write(ast_str)

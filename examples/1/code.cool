@@ -1,18 +1,9 @@
-class A {
-    met1 ( e : String ) : AUTO_TYPE {
-            {
-                c <- a ;
-                c <- b ;
-            }
-    } ;
-
-    a : C ;
-    b : B ;
-    c : AUTO_TYPE ;
-} ;
-
-class C inherits B {
-} ;
-
-class B {
-} ;
+class Main inherits IO {
+    main() : AUTO_TYPE {
+        let x : AUTO_TYPE <- 3 + 2 in {
+            case x of
+                y : Int => out_string("Ok");
+            esac;
+        }
+    };
+};
