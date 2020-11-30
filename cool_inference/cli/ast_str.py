@@ -39,7 +39,7 @@ class AstStr(object):
 
     @visitor.when(Assign)
     def visit(self, node: Assign, indent):  # noqa: F811
-        return "{id} <- {exp}".format(id=node.id, exp=node.value)
+        return "{id} <- {exp}".format(id=node.id, exp=self.visit(node.value, indent))
 
     @visitor.when(AttrDecl)
     def visit(self, node: AttrDecl, indent):  # noqa: F811
