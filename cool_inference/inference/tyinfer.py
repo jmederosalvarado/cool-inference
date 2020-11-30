@@ -43,17 +43,17 @@ class BagsCollector:
         self.all_types = set(self.all_types)
 
         io_tybags = TyBags()
-        io_tybags.define_variable("out_int", {"IO"})
-        io_tybags.define_variable("out_string", {"IO"})
+        io_tybags.define_variable("out_int", {"SELF_TYPE"})
+        io_tybags.define_variable("out_string", {"SELF_TYPE"})
         io_tybags.define_variable("in_int", {"Int"})
         io_tybags.define_variable("in_string", {"String"})
         io = context.get_type("IO")
         met = io.get_method("out_int")
         met.tybags = io_tybags.create_child("out_int")
-        met.tybags.define_variable("x", {"IO"})
+        met.tybags.define_variable("x", {"SELF_TYPE"})
         met = io.get_method("out_string")
         met.tybags = io_tybags.create_child("out_string")
-        met.tybags.define_variable("x", {"IO"})
+        met.tybags.define_variable("x", {"SELF_TYPE"})
         met = io.get_method("in_string")
         met = io.get_method("in_int")
 
@@ -357,7 +357,6 @@ class BagsReducer:
         elif len(exp_types) == 1:
             exp_type = self.context.types[list(exp_types)[0]]
             method = exp_type.get_method(node.id)
-            print(method)
             function_ty = method.tybags
 
             for arg, param in zip(node.exp_list, method.param_names):
@@ -591,7 +590,6 @@ class BagsReplacer:
 
     @visitor.when(AttrDecl)
     def visit(self, node, tybags):  # noqa: F811
-        print(tybags.vars[node.id])
         node.type = solve_bag(tybags.vars[node.id], self.context)
         if node.body is not None:
             self.visit(node.body, tybags)
