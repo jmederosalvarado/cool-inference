@@ -26,6 +26,7 @@ class Method:
         self.param_names = param_names
         self.param_types = params_types
         self.return_type = return_type
+        self.tybags = None
 
     def __str__(self):
         params = ", ".join(
