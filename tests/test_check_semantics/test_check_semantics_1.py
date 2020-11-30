@@ -5,7 +5,7 @@ from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeCheck
 def test1():
     test1 = """
         class Main inherits Object {
-            a : Int <- asd ;
+            a : Int <- "asd" ;
             b : String <- 1000;
             c : Bool <- true;
 
@@ -49,4 +49,7 @@ def test1():
         print("\t", error)
     print("]")
 
-    assert errors == []
+    assert errors == [
+        """Cannot convert "Int" into "String".""",
+        """Cannot convert "String" into "Int".""",
+    ]
