@@ -80,7 +80,9 @@ class AstStr(object):
 
     @visitor.when(CoolClass)
     def visit(self, node: CoolClass, indent):  # noqa: F811
-        decl = "{id} inherits {parent}".format(id=node.id, parent=node.inherit)
+        decl = "class {id} inherits {parent}".format(
+            id=node.id, parent=(node.inherit or "Object")
+        )
         features = (self.visit(feat, indent + 1) for feat in node.feature_list)
         features = ("  " * (indent + 1) + feat for feat in features)
         features = "\n".join(features)
