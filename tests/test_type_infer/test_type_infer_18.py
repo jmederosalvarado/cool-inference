@@ -4,26 +4,23 @@ from cool_inference.inference.tyinfer import BagsCollector, BagsReducer
 from cool_inference.utils.utils import search_for_errors
 
 
-def test12():
-    test12 = """
-        class A {
-
-            met1 ( e : String ) : AUTO_TYPE {
-                    (a <- case e of
-                        b : AUTO_TYPE => b + 5 ;
-                        c : AUTO_TYPE => c <- e ;
-                        d : AUTO_TYPE => { d + 10 ; false ; } ;
-                    esac) + 5
-            } ;
-
-            a : AUTO_TYPE ;
-
-        } ;
+# TODO
+def test17():
+    test17 = """
+        class Main inherits IO {
+            main() : AUTO_TYPE {
+                let x : AUTO_TYPE <- 3 + 2 in {
+                    case x of
+                        y : Int => out_string("Ok");
+                    esac;
+                }
+            };
+        };
 
 
             """
 
-    ast = parser.parse(test12)
+    ast = parser.parse(test17)
 
     errors = []
 

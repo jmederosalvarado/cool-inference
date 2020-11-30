@@ -16,8 +16,13 @@ def test6():
         } ;
 
         class Point {
-            translate ( a : Int, b:Int ) : Int {
-                a + b
+            x : AUTO_TYPE ;
+            y : AUTO_TYPE ;
+            translate ( n : Int, m:Int ) : Point {
+                {
+                x <- n;
+                y <- m;
+                }
             } ;
         } ;
             """
