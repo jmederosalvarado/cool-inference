@@ -1,0 +1,3 @@
+class A {
+    succ(n : AUTO_TYPE) : AUTO_TYPE { n + 1 };
+};
