@@ -348,11 +348,11 @@ class BagsReducer:
                 if error not in self.errors:
                     self.errors.append(error)
 
-                return set([self.context.types["ERROR"]])
+                return {"ERROR"}
 
             tybags.reduce_bag(node.exp, types_whith_method)
 
-            return return_types
+            result = return_types
 
         elif len(exp_types) == 1:
             exp_type = self.context.types[list(exp_types)[0]]
@@ -363,7 +363,14 @@ class BagsReducer:
                 arg_types = self.visit(arg, tybags, function_ty.vars[param])
                 function_ty.reduce_bag(None, arg_types, name=param)
 
-            return function_ty.find_variable(node.id)
+            result = function_ty.find_variable(node.id)
+
+        if "SELF_TYPE" in result:
+
+            result.remove("SELF_TYPE")
+            result = set.union(result, {self.current_type.name})
+
+        return result
 
     @visitor.when(StaticDispatch)
     def visit(self, node, tybags, restriction):  # noqa: F811
@@ -395,11 +402,11 @@ class BagsReducer:
                 if error not in self.errors:
                     self.errors.append(error)
 
-                return set([self.context.types["ERROR"]])
+                return {"ERROR"}
 
             tybags.reduce_bag(node.exp, types_whith_method)
 
-            return return_types
+            result = return_types
 
         elif len(exp_types) == 1:
             exp_type = self.context.types[list(exp_types)[0]]
@@ -411,7 +418,14 @@ class BagsReducer:
                 arg_types = self.visit(arg, tybags, function_ty.vars[param])
                 function_ty.reduce_bag(None, arg_types, name=param)
 
-            return function_ty.find_variable(node.id)
+            result = function_ty.find_variable(node.id)
+
+        if "SELF_TYPE" in result:
+
+            result.remove("SELF_TYPE")
+            result = set.union(result, {self.current_type.name})
+
+        return result
 
     @visitor.when(LetIn)
     def visit(self, node, tybags, restriction):  # noqa: F811

@@ -1,0 +1,13 @@
+class A {
+
+    met1 ( e : String ) : AUTO_TYPE {
+            (a <- case e of
+                b : AUTO_TYPE => b + 5 ;
+                c : AUTO_TYPE => c <- e ;
+                d : AUTO_TYPE => { d + 10 ; false ; } ;
+            esac) + 5
+    } ;
+
+    a : AUTO_TYPE ;
+
+} ;

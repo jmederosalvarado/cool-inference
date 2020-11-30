@@ -22,6 +22,7 @@ def test6():
                 {
                 x <- n;
                 y <- m;
+                self;
                 }
             } ;
         } ;

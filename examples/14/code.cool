@@ -1,0 +1,20 @@
+class A {
+    a : AUTO_TYPE ;
+    b : Int ;
+
+    met1 ( ) : Int {
+        a.met2(b)
+    } ;
+} ;
+
+class B {
+    met2 ( f : Int ) : Int {
+        f
+    }  ;
+} ;
+
+class C {
+    met2 ( f : Int ) : Int {
+        f
+    }  ;
+} ;

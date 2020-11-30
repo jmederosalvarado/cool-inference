@@ -1,0 +1,14 @@
+class A {
+
+    met1 ( e : String ) : AUTO_TYPE {
+            {
+            b <- "asd" ;
+            b <- true ;
+            b <- c ;
+            c ;
+            } + 5
+    } ;
+
+    b : AUTO_TYPE ;
+    c : AUTO_TYPE ;
+} ;
