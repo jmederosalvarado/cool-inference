@@ -538,4 +538,6 @@ class TypeChecker:
 
     @visitor.when(NewType)
     def visit(self, node, scope):  # noqa: F811
+        if node.type == "SELF_TYPE":
+            return self.current_type
         return self.context.get_type(node.type)
