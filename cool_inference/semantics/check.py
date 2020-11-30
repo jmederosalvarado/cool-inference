@@ -219,7 +219,19 @@ class TypeChecker:
 
     @visitor.when(AttrDecl)
     def visit(self, node, scope):  # noqa: F811
-        pass
+        if node.body is not None:
+            exp_type = self.visit(node.body, scope)
+            node_type = self.context.get_type(node.type)
+
+            if exp_type.name == "SELF_TYPE" and not node_type.conforms_to(
+                self.exp_type
+            ):
+                self.errors.append(
+                    INCOMPATIBLE_TYPES % (node_type.name, self.exp_type.name)
+                )
+
+            elif exp_type.name != "SELF_TYPE" and not node_type.conforms_to(exp_type):
+                self.errors.append(INCOMPATIBLE_TYPES % (node_type.name, exp_type.name))
 
     @visitor.when(FuncDecl)
     def visit(self, node, scope):  # noqa: F811
@@ -233,7 +245,18 @@ class TypeChecker:
 
         return_type = self.visit(node.body, method_scope)
 
-        if not return_type.conforms_to(self.current_method.return_type):
+        if (
+            self.current_method.return_type.name == "SELF_TYPE"
+            and not return_type.conforms_to(self.current_type)
+        ):
+            self.errors.append(
+                INCOMPATIBLE_TYPES % (return_type.name, self.current_type.name)
+            )
+
+        elif (
+            self.current_method.return_type.name != "SELF_TYPE"
+            and not return_type.conforms_to(self.current_method.return_type)
+        ):
             self.errors.append(
                 INCOMPATIBLE_TYPES
                 % (return_type.name, self.current_method.return_type.name)
@@ -274,7 +297,12 @@ class TypeChecker:
             if not arg_type.conforms_to(ptype):
                 self.errors.append(INCOMPATIBLE_TYPES % (arg_type.name, ptype.name))
 
-        return method.return_type
+        result = method.return_type
+
+        if result.name == "SELF_TYPE":
+            result = exp_type
+
+        return result
 
     @visitor.when(StaticDispatch)
     def visit(self, node, scope):  # noqa: F811
@@ -322,8 +350,15 @@ class TypeChecker:
             else:
                 right_type = self.visit(expx, scope)
 
-            if not right_type.conforms_to(typex):
-                self.errors.append(INCOMPATIBLE_TYPES % (right_type, typex))
+            if typex.name == "SELF_TYPE" and not right_type.conforms_to(
+                self.current_type
+            ):
+                self.errors.append(
+                    INCOMPATIBLE_TYPES % (right_type.name, self.current_type.name)
+                )
+
+            elif typex.name != "SELF_TYPE" and not right_type.conforms_to(typex):
+                self.errors.append(INCOMPATIBLE_TYPES % (right_type.name, typex.name))
 
             let_scope.define_variable(idx, typex)
 
@@ -503,4 +538,6 @@ class TypeChecker:
 
     @visitor.when(NewType)
     def visit(self, node, scope):  # noqa: F811
+        if node.type == "SELF_TYPE":
+            return self.current_type
         return self.context.get_type(node.type)
