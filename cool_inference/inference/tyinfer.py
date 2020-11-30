@@ -256,19 +256,14 @@ class BagsReducer:
     def visit(self, node, tybags=None, restriction=None):  # noqa: F811
         tybags = TyBags()
 
-        n = 0
         while not self.tybags.compare(tybags):
-            n += 1
-            # print("============================")
-            # print(tybags)
-            # if n == 30:
-            #     return tybags
+
             tybags.clone(self.tybags)
 
             for cool_class in node.cool_class_list:
                 self.visit(cool_class, self.tybags, [])
-        self.tybags.clean()
 
+        self.tybags.clean()
         self.tybags.clean_locks()
         return self.tybags
 
