@@ -5,6 +5,7 @@ class Point {
         {
             x <- n;
             y <- m;
+            self ;
         }
     };
 };
