@@ -45,7 +45,7 @@ class AstStr(object):
     def visit(self, node: AttrDecl, indent):  # noqa: F811
         decl = "{id}: {type}".format(id=node.id, type=node.type)
         init = (
-            "<- {value}".format(value=self.visit(node.body, indent))
+            " <- {value}".format(value=self.visit(node.body, indent))
             if node.body
             else ""
         )
@@ -155,7 +155,13 @@ class AstStr(object):
 
     @visitor.when(LetIn)
     def visit(self, node: LetIn, indent):  # noqa: F811
-        decls = ", ".join((self.visit(decl, indent) for decl in node.decl_list))
+        decls = ", ".join(
+            (
+                "{id}: {type}".format(id=idx, type=typex)
+                + (" <- {value}".format(value=self.visit(init, indent)) if init else "")
+                for (idx, typex, init) in node.decl_list
+            )
+        )
         expr = self.visit(node.exp, indent)
         return "let {decls} in {expr}".format(decls=decls, expr=expr)
 
