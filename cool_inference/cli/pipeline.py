@@ -2,6 +2,7 @@ from lark import UnexpectedCharacters, UnexpectedToken
 from cool_inference.parsing.parser import parser
 from cool_inference.semantics.check import TypeCollector, TypeBuilder, TypeChecker
 from cool_inference.inference.tyinfer import BagsCollector, BagsReducer, BagsReplacer
+from cool_inference.cli.ast_str import AstStr
 
 
 def get_rich_printers():
@@ -226,3 +227,6 @@ def pipeline(code):
     else:
         print_success("Finished without errors")
     print()
+
+    ast_str = AstStr()
+    return ast_str.visit(ast, 0)
