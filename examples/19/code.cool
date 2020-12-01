@@ -1,7 +1,0 @@
-class A {
-
-    f ( x : AUTO_TYPE ) : AUTO_TYPE {
-            x.g()
-    } ;     
-
-} ;
