@@ -7,7 +7,7 @@ proceso de inferencia de tipos y chequeo semántico. Para una mejor visualizaci�
 de estos detalles, instalar [rich](https://github.com/willmcgugan/rich).
 En la carpeta que contiene el archivo con el código se generara un nuevo archivo
 que contiene el mismo código pero con los tipos ya inferidos. Se provee una carpeta
-con ejemplos de programas de cool y la salida esperada.
+con ejemplos de programas de cool con una descripcion de cada uno de ellos.
 
 ```bash
 python -m cool_inference <path to cool file>
