@@ -1,0 +1,11 @@
+class A {
+
+    met1 ( e : String ) : AUTO_TYPE {
+            a <- if b then c + 5 else d <- e fi
+    } ;
+
+    a : AUTO_TYPE ;
+    b : AUTO_TYPE ;
+    c : AUTO_TYPE ;
+    d : AUTO_TYPE ;
+} ;

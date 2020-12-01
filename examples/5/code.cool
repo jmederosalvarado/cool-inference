@@ -1,24 +1,20 @@
-class Point {
-    x : AUTO_TYPE;
-    y : AUTO_TYPE;
-    init(n : Int, m : Int) : Point {
-        {
-            x <- n;
-            y <- m;
-        }
-    };
-
-    translate(x: Int, y: Int) : Point {
-        # No es que poner aqui ;)
-    };
-};
-
-class Program {
-    step(p : AUTO_TYPE) { p.translate(1,1) };
+class A {
+    step(q : AUTO_TYPE) : AUTO_TYPE { q.translate(1,1) } ;
 
     main() : Object {
-        let p : AUTO_TYPE <- new Point(0,0) in {
-            step(p) # Puede lanzar error semantico
-        };
-    };
-};
+        let p : AUTO_TYPE in
+            step(p)
+    } ;
+} ;
+
+class Point {
+    x : AUTO_TYPE ;
+    y : AUTO_TYPE ;
+    translate ( n : Int, m:Int ) : Point {
+        {
+        x <- n;
+        y <- m;
+        self;
+        }
+    } ;
+} ;

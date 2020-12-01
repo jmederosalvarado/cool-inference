@@ -1,0 +1,10 @@
+class A {
+
+    met1 ( e : String ) : AUTO_TYPE {
+            (a <- b) + c
+    } ;
+
+    a : AUTO_TYPE ;
+    b : String ;
+    c : AUTO_TYPE ;
+} ;

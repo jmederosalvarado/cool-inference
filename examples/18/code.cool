@@ -1,0 +1,15 @@
+class A {
+
+    f ( x : AUTO_TYPE ) : AUTO_TYPE {
+            x
+    } ;
+
+    g ( x : AUTO_TYPE ) : AUTO_TYPE {
+            f(x+1)
+    } ;
+
+    h ( x : String ) : AUTO_TYPE {
+            f(x)
+    } ;
+
+} ;

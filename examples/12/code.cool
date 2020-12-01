@@ -1,0 +1,14 @@
+class A {
+    a : AUTO_TYPE ;
+    b : AUTO_TYPE ;
+
+    met1 ( ) : AUTO_TYPE {
+        a.met2(b)
+    } ;
+} ;
+
+class B {
+    met2 ( f : AUTO_TYPE ) : Int {
+        f + 5
+    }  ;
+} ;

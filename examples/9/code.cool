@@ -1,0 +1,17 @@
+class A {
+    d : AUTO_TYPE <- 2 ;
+
+    met1 ( e : String ) : AUTO_TYPE {
+            b.met2 ( a )
+    } ;
+
+    a : AUTO_TYPE <- 5 ;
+    b : B <- new B ;
+
+} ;
+
+class B {
+    met2 ( f : AUTO_TYPE ) : Int {
+        f + 5
+    }  ;
+} ;
