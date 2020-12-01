@@ -77,7 +77,6 @@ class BagsCollector:
 
         tybags.define_variable("self", [self.current_type.name], True)
 
-        # TODO: hacer esto en el visit de FuncDecl
         for method in self.current_type.methods:
             if method.return_type.name == "AUTO_TYPE":
                 types = self.all_types
@@ -86,7 +85,6 @@ class BagsCollector:
                 types = [method.return_type.name]
                 tybags.define_variable(method.name, types, True)
 
-        # TODO: hacer esto en el visit de AttrDecl
         for attr in self.current_type.attributes:
             if attr.type.name == "AUTO_TYPE":
                 types = self.all_types
