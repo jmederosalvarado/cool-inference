@@ -32,7 +32,6 @@ class TyBags:
 
     def reduce_bag(self, node, types, name=None):
 
-        # TODO: preguntar especificamente el tipo del nodo
         try:
             var_name = node.id
         except AttributeError:
@@ -57,7 +56,6 @@ class TyBags:
             self.modify_variable(var_name, set.union(var_types, types, {"@union"}))
 
         else:
-            # TODO: revisar estos casos
             if "@union" in var_types:
                 self.modify_variable(var_name, set.union(var_types, types))
             elif "@union" in types:
@@ -105,7 +103,6 @@ class TyBags:
         for _, chil in self.children.items():
             chil.clean_locks()
 
-    # TODO: creo que esto esta maja
     def compare(self, ty_bags):
         if len(self.vars) != len(ty_bags.vars) or len(self.children) != len(
             ty_bags.children
@@ -124,7 +121,6 @@ class TyBags:
                 return False
         return True
 
-    # TODO: este metodo deberia devolver un nuevo tybag igual a self
     def clone(self, ty_bags):
         self.parent = ty_bags.parent
         for key, value in ty_bags.vars.items():

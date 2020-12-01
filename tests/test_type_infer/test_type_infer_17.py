@@ -4,7 +4,6 @@ from cool_inference.inference.tyinfer import BagsCollector, BagsReducer
 from cool_inference.utils.utils import search_for_errors
 
 
-# TODO
 def test17():
     test17 = """
         class A {
