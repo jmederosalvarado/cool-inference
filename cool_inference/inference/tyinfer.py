@@ -142,7 +142,10 @@ class BagsCollector:
         let_tybags = tybags.create_child(node)
         decl_list, exp = node.decl_list, node.exp
 
-        for idx, _type, _ in decl_list:
+        for idx, _type, decl in decl_list:
+            if decl is not None:
+                self.visit(decl, let_tybags)
+
             typex = self.context.get_type(_type)
 
             if typex.name == "AUTO_TYPE":
